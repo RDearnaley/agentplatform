@@ -74,8 +74,9 @@ The Framework
 * A GUI for this would be nice, but is not my forte. A web UI would seem like the obvious implementation. Docker and K8s already have app/web GUIs
 We'd also need a database, and some combination of repositories for code and Docker/K8s images.
 
-I'm not an FE developer, but I do know Javascript, and I gather node.js is widely used. there are two ways to connect ot to PostgreSQL, node-postgres and sequelize. node-postgres is oldschool, while sequelize is an ORM. Apparently they can bothe be sued in one app, so likley it's possible tom port between them, and node-postgres has a shorter learning curve.
-Or if I wanted to stay in Python for each integration with ML (not obvious why this would be an advantage, apparently Django or Flask are widely used.
+I'm not an FE developer, but I do know Javascript, and I gather node.js is widely used. there are two ways to connect ot to PostgreSQL, node-postgres and sequelize. node-postgres is oldschool, while sequelize is an ORM. Apparently they can bothe be used in one app, so likely it's possible tom port between them, and node-postgres has a shorter learning curve.
+Or if I wanted to stay in Python for each integration with ML (not obvious why this would be an advantage, apparently Django or Flask are widely used. Django is better for larger projects, but has a longer learning curve
+    * For this quick demo, I'll us Flask. For a real project, Django would probably be a better choice.
 I'm tempted to build the DB and leave the web UI as TBD, and just build the business logic. Which I'd rather not do in Javascript, sine mine is rusty, so am leaning towards Python.
 
 Data storage
@@ -88,6 +89,9 @@ Language Choice
 * One could make a security argument for using something that would be obscure enough that escaped agents would have trouble hacking into it (LISP, say), but our security should be based on things like good network firewall configs and permissions, not security-through-obscurity.
 * A language that LLM researchers are likely to be familair with, and that I'm familiar with, seems like the obvious choice. So that would mean Python, or possibly C++ or Java or Javascript. For a real project there might also be an argument for doing the front-end and back-end in two different languages, especially if we had separate front-end and back-end enginenrs working on it (that might allow us to use the best tools for each job, and might encourage clean separation of concerns), but not for a quick demo prototype.
 * Since I'm doing a quick demo prototype, an interpreted labgauge would be best, and I've been coding in Python for the last year or so so that's what I'm currently most in-practice in. So Python it is, front-and-back.
+    * Therefor Django of Lask, as stated above Flask makes more sense for a quick demo.
+    * Connecting Flask to PostgreSQL the standard approach is to use psycopg2.
+
 
 TODO:
 1. Locate a Docker image with langchain, and set it up to run an agent with an initial prompt
