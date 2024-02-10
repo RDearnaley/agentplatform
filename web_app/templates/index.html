@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{% block title %} Agents {% endblock %}</h1>
+    {% for agent in agents %}
+        <div class='agent'>
+            <h3>#{{ agent[0] }} - {{ agent[1] }} BY {{ agent[2] }}</h3>
+            <i><p>({{ agent[3] }} pages)</p></i>
+            <p class='parameters'>{{ agent[4] }}</p>
+            <i><p>Added {{ agent[5] }}</p></i>
+        </div>
+    {% endfor %}
+    <br>
+    <h1>{% block title2 %} Tasks {% endblock %}</h1>
+    {% for task in tasks %}
+        <div class='task'>
+            <h3>#{{ task[0] }} - {{ task[1] }} BY {{ task[2] }}</h3>
+            <i><p>({{ task[3] }} pages)</p></i>
+            <p class='parameters'>{{ task[4] }}</p>
+            <i><p>Added {{ task[5] }}</p></i>
+        </div>
+    {% endfor %}
+{% endblock %}

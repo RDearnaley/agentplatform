@@ -1,15 +1,43 @@
 # agentplatform
 Platform for testing agents against tasks
 
+Tasks I skipped for this demo are marked 'TODO' or 'TBD'
+
 # OS and Requirements
 I'm not sure how much of this is specifically required, but heres the setup I developed on:
 Mac OS on Apple Silicon (ARM64 M2) - I'm using Sonoma 14.2.1, but anything recent should work
 Docker Desktop - I'm using version 4.23
-PostgreSQL - I'm using 16.1 with pgAdmin and StackBuilder (Note: PostgreSQL is best installed on Mac using brew, the installer from EDB has useful tools like pgAdmin that work but the database itself won't install correctly.)
+PostgreSQL - I'm using 16.1 with pgAdmin and StackBuilder (Note: PostgreSQL is best installed on Mac using brew, the installer from EDB has useful tools like pgAdmin that work but the database itself won't install correctly.):
+
+brew update
+brew doctor
+brew install postgres
+
+If you installed PostgreSQL with brew then the command to start the database cluster running (if you don't have it set up to start automatically) should be something like:
+
+/opt/homebrew/bin/postgres -D /opt/homebrew/var/postgresql@14
+
 (I'm also using GitHub Desktop 3.3.6 and Visual Studio Code 1.85.1, but I don't think there are any dependencies on them.)
 
-* From a design point of view, I'd expect this to be easy to port to any Linux system, and it probably could be ported to Windows without too much trouble if needed.
+I'm using conda for python library version control. To do the same you will need to install it, then run the following:
 
+[set current working directory to the agentplatform directory]
+./scripts/conda_init_.zsh                           [run onc, sets up the conda environmente]
+conda activate agentplatform                        [run in each shell]
+./scripts/requirements.zsh                   		[run once, pip installs requirements.txt]
+
+TODO: I provided the conda activate agentplatform command as a script ./scripts/conda.zsh but somehow it doesn't seem to function correctly when run in scripts].
+
+To set up the database schema (if you're not just pointing to the one in agentplatform/PostgreSQL/14/data/), create a user called postgres, a tablespace called agentplatform, a database called agentplatform, and then run:
+
+export DB_PASSWORD=" xyccok-duHzes-8rydsi "         [password for postgres user of agentplatform/PostgreSQL/14/data/, update this if you created your own user]
+python3 ./web_app/init_db.py
+
+TODO: In a non-demo system the database user password would not be in the README.md, it would be in a proper secret store, encrypted at rest, and we'd have a script to load it from there into the environment variable.
+
+# Design Discussion
+
+* From a design point of view, I'd expect this to be easy to port to any Linux system, and it probably could be ported to Windows without too much trouble if needed.
 
 Sample agent tasks
 1. Create a bitcoin wallet saved to a specific location
@@ -30,7 +58,8 @@ Implementation:
 Initially, Docker images. Thius should almost certainly be upraded to K8s, I may leave doing this as a TBD.
 We need an agent. Langchain appears to support a number, including OpenAI tools agent and a now-deprecated OpenAI function agent both based on OpenAI, and XML Agent based on Claude. Since I have an OpenAI account, I am going with OpenAI tools agent. This will require agent memory, the default is ####
 
-The Framework
+## The Framework
+
 * List of Agents (currently 1)
     * Should be versioned and/or timestamped, as we're likely to uopdate them
     * Agents could have settings or parameters
@@ -89,18 +118,32 @@ Language Choice
 * One could make a security argument for using something that would be obscure enough that escaped agents would have trouble hacking into it (LISP, say), but our security should be based on things like good network firewall configs and permissions, not security-through-obscurity.
 * A language that LLM researchers are likely to be familair with, and that I'm familiar with, seems like the obvious choice. So that would mean Python, or possibly C++ or Java or Javascript. For a real project there might also be an argument for doing the front-end and back-end in two different languages, especially if we had separate front-end and back-end enginenrs working on it (that might allow us to use the best tools for each job, and might encourage clean separation of concerns), but not for a quick demo prototype.
 * Since I'm doing a quick demo prototype, an interpreted labgauge would be best, and I've been coding in Python for the last year or so so that's what I'm currently most in-practice in. So Python it is, front-and-back.
-    * Therefor Django of Lask, as stated above Flask makes more sense for a quick demo.
+    * Therefor of Django or Flask, as stated above Flask makes more sense for a quick demo.
     * Connecting Flask to PostgreSQL the standard approach is to use psycopg2.
-
 
 TODO:
 1. Locate a Docker image with langchain, and set it up to run an agent with an initial prompt
 2. Make the initial propmpt templated
 3. Make a docker image of this
 4. Make versions with needed extras preinstalled
-5. Install PostgreSQL
-6. Build a basic databse schema, manually or in Python
-7. Get a basic web GUI up, say to read the lists of agents and tasks
+5. Make a proper web app, not a quick proof-of-concept
+
+
+## Running the Web App
+
+TODO: At some point we should use a real web server rather than a Flask development environment (which is what the script starts)
+
+Make sure you have run the export DB_PASSWORD=... command given above and are in the agentplatform directory.
+
+./scripts/web_app.zsh
+
+Then point your browser to http://127.0.0.1:5000/ to see the proof-of-concept web app
+
+TODO: Make a proper well-designed and elegant web app, with a good UX for all needed functionality, not a quick hack proof-of-concept
+
+
+
+
 
 
 
