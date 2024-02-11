@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %} {% endblock %}- FlaskApp</title>
+    <title>{% block title %} &amp; {% endblock %} {% block title2 %} {% endblock %} - Flask App</title>
     <style>
         nav a {
             color: #d64161;
@@ -17,9 +17,8 @@
             background-color: #f7f4f4;
         }
 
-        .review {
-                margin-left: 50px;
-                font-size: 20px;
+        .parameters {
+                margin-left: 20px;
         }
         
         .task {
@@ -32,7 +31,7 @@
 </head>
 <body>
     <nav>
-        <a href="{{ url_for('index') }}">FlaskApp</a>
+        <a href="{{ url_for('index') }}">Flask App</a>
         <a href="#">About</a>
     </nav>
     <hr>
