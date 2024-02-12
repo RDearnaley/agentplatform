@@ -124,6 +124,19 @@ Or if I wanted to stay in Python for easier integration with ML (not clear why t
     - For this quick demo, I'll use Flask. For a real project, Django would probably be a better choice.
 I'm tempted to build the DB and leave the web UI as TBD, and just build the business logic. Which I'd rather not do in Javascript, since mine is rusty, so I am leaning towards Python.
 
+#### Supporting O(1000) Parallel Runs
+- Port this from Docker to Kubernetes (it's generally better at this sort of scale than Docker Swarm, and it has Docker integration)
+    - Implement network security settings (keeping the agent in), which is a TODO above
+    - Implement proper secrets storage, which is a TODO above
+- Set this up on a cluster rented from a cloud provider (AWS, GCP, or Azure) with hardware autoscaling.
+    - Have a security engineer help get the security set up right
+- Above we are mostly relying on Docker's/Kubernetes' inbuilt tools for monitoring and administering images, runs, and their results (for dev work, I was using Docker Desktop). Whatever cloud provider we use will also have tools for this. At O(1000) scale I strongly suspect those are going to be clunky and need help/additional work/maybe even some automation to make a good usable system. We'll also need database backups and failover, etc.
+    - An open question here is whether to just integrate into Docker/Kubernetes, and/or to duplicate some of their functionality, or at least add spaces for keeping track of runs and their results in our own database.
+        - If we have two sources of truth they can potentially get out of step, single-source-of-truth designs tend to be cleaner.
+        - On the other hand, if we rely on an external service they may not have good places for us to store metadata specific to our usage, e.g. comments for human raters.
+        - Lifetime: docker run images will need to be deleted for space, but we may want to keep certain records of them indefinitely, which might need us to keep a separate database, at least as an archive.
+    - We'll likely also need alerting, dashboards, resource usage monitoring, etc. etc.
+
 #### Data storage
 A database would seem obvious. Data storage needs are open-ended, so one with XML or JSON support seems useful. I'm inclined to avoid Oracle given it's overhead. With 1 agent and 2 tasks it feel like massive overkill, but obviously this is intended to scale to the point where this would be needed. I'm wondering if I should leave this as a TBD, but it feels like a large omission in a framework.
     - If we want to go NoSQL then BaseX, eXist seem like plausible candidates, but I'm not familiar with them
@@ -139,12 +152,14 @@ A database would seem obvious. Data storage needs are open-ended, so one with XM
     - Therefore of Django or Flask, as stated above Flask makes more sense for a quick demo.
     - Connecting Flask to PostgreSQL the standard approach is to use psycopg2.
 
-## TODO:
-1. Make the agent's initial prompt templated
-2. Make task versions with needed extras preinstalled
-3. Improve the web app to include a select-to-build-and-run form
-4. Add a hash-based Docker image cache mechanism, if Docker doesn't already have one?
-5. Handle task-specific network security settings: this should probably be handled in Kubernetes, so will likely leave is as a TODO
+## TODO and Bugs:
+1. Make task versions with needed extras preinstalled: Bitcoin done
+2. Issue: For Bitcoin task, agent runs out of context (due to excessive logging from a download), needs a scrolling context window + memory
+3. Bug: The crackme for the crackme task will run on Mac but not on Debian inside the Docker image, I was unable to laocte one that would run there, we might need to build one fromC code
+3. Debug why agent thought/progress output doesn't stream to the log for around 3 mins, so you can't see what it's doing until shortly before it finishes?
+4. Issue: The long Docker image names we're using to be usefully specific are not well supported on Docker Desktop, making it annoying to work with
+5. Improve the web app to include a select-to-build-and-run form
+6. Handle agent-and-task-specific network security settings: this should probably be handled in Kubernetes, so will likely leave is as a TODO
 
 
 ## Use Instructions
@@ -187,13 +202,13 @@ Build Task:
 (Template settings <settings>bar</settings>", agent path "agents/openai/1.0.0", and task path "tasks/reverse_engineering/crackmes/1.0.0")
 
 cd tasks/reverse_engineering/crackmes/1.0.0
-docker build -f Dockerfile.task --build-arg agent_path="agents/openai/1.0.0" --build-arg settings="<settings>bar</settings>" -t "agentplatform/agents/openai/1.0.0/tasks/reverse_engineering/crackmes/1.0.0:Dockerfile/" --pull=false .
+docker build -f Dockerfile.task --build-arg agent_path="agents/openai/1.0.0" --build-arg settings="<settings>bar</settings>" -t "agentplatform/agents/openai/1.0.0/tasks/reverse_engineering/crackmes/1.0.0:Dockerfile" --pull=false .
 cd ../../../..
 
 or:
 
 cd tasks/unix_cli/create_bitcoin_wallet/1.0.0
-docker build -f Dockerfile.task --build-arg agent_path="agents/openai/1.0.0" --build-arg settings="<settings>bar</settings>" -t "agentplatform/agents/openai/1.0.0/tasks/unix_cli/create_bitcoin_wallet/1.0.0:Dockerfile/" --pull=false .
+docker build -f Dockerfile.task --build-arg agent_path="agents/openai/1.0.0" --build-arg settings="<settings>bar</settings>" -t "agentplatform/agents/openai/1.0.0/tasks/unix_cli/create_bitcoin_wallet/1.0.0:Dockerfile" --pull=false .
 cd ../../../..
 
 

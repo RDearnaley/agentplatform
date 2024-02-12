@@ -1,10 +1,29 @@
-# Build on to of the agent
-VAR agent_path
+# Build on top of the agent
+ARG agent_path
 FROM agentplatform/${agent_path}:Dockerfile AS agentplatform_task
 
-# TODO: Add tools
+# Add reverse-engineering tools
+WORKDIR /tmp
+RUN git clone https://github.com/radareorg/radare2
+WORKDIR /tmp/radare2
+RUN sys/install.sh
 
-# TODO: Set prompt
+# Add file to crack
+
+# TODO: While this executable will run on Mac, it won't run on a Debian image inside Docker Desktop(!)
+# So this isn't a fair test as the agent has no way to check the password it guesses.
+# Running the executable there I get the error:
+# /bin/sh: 4: ./crackme0x00: Exec format error
+# I haven't manage to locate any crackme that will run there, others I tried give errors like:
+# qemu-arm: Could not open '/lib/ld-linux.so.3': No such file or directory
+# (but with variations in which specific library they're looking for)
+# Probably we'll need to find a crackme with source code and build it specifically for the
+# correct environment, then give the agent access to the binary but not the source. E.g there
+# are some C crackmes at https://github.com/noracodes/crackmes
+COPY crackme0x00 /root/crackme0x00
+
+# Set instructions
+COPY instructions.txt /root/instructions.txt
 
 # Pass in settings
 ARG settings="<settings></settings>"
