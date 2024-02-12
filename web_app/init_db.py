@@ -119,7 +119,39 @@ try:
                 "OpenAI",
                 datetime.now(),
                 "1.0.0",
-                "agents/openai/1.0.0",
+                "openai",
+                ["exec", "memory", "websearch"],
+                "<settings></settings>",
+            ),
+        )
+
+        cursor.execute(
+            "INSERT INTO public.tasks (id, type, subtype, name, timestamp, version, image_path, required_abilities, settings)"
+            "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)",
+            (
+                "1",
+                "Reverse engineering",
+                "CrackMes",
+                "0x00",
+                datetime.now(),
+                "1.0.0",
+                "reverse_engineering/crackmes/0x00",
+                ["exec", "memory", "websearch"],
+                "<settings></settings>",
+            ),
+        )
+
+        cursor.execute(
+            "INSERT INTO public.tasks (id, type, subtype, name, timestamp, version, image_path, required_abilities, settings)"
+            "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)",
+            (
+                "2",
+                "UNIX CLI",
+                "Tool use",
+                "Create Bitcoin wallet",
+                datetime.now(),
+                "1.0.0",
+                "unix_cli/tool_use/create_bitcoin_wallet",
                 ["exec", "memory", "websearch"],
                 "<settings></settings>",
             ),

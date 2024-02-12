@@ -1,14 +1,14 @@
 # agentplatform
 Platform for testing agents against tasks
 
-Tasks I skipped for this demo are marked 'TODO' or 'TBD'
+Items I skipped for this demo are marked 'TODO', here and/or in the codebase.
 
 
 ## OS and Requirements
 I'm not sure how much of this is specifically required, but heres the setup I developed on:
 Mac OS on Apple Silicon (ARM64 M2) - I'm using Sonoma 14.2.1, but anything recent should work
 Docker Desktop - I'm using version 4.23
-PostgreSQL - I'm using 16.1 with pgAdmin and StackBuilder (Note: PostgreSQL is best installed on Mac using brew, the installer from EDB has useful tools like pgAdmin that work but the database itself won't install correctly.):
+PostgreSQL - I'm using 14 with pgAdmin and StackBuilder (Note: PostgreSQL is best installed on Mac using brew, the installer from EDB has useful tools like pgAdmin that work but the database itself won't install correctly.):
 
 brew update
 brew doctor
@@ -61,17 +61,17 @@ TODO: In a non-demo system the database user password would NOT be in the README
    1. Find information on the web: require  websearch, e.g. in LangChain TavilySearchResults (I'll need a free API key)
    2. Download a wallet tool, likely a CLI one, and run it: requires CLI access, e.g. in LangChain ShellTool
   
-2. Solve a UNIX crackmes
+2. Solve a UNIX crackme
    Requirements:
    0. agent memory
    1. Find information on the web: require  websearch, e.g. in LangChain TavilySearchResults
    2. CLI reverse engineering tools. Best candidate seems to be radare2, though it's not just a CLI but has a text-based GUI that might be hard for an agent to interface to.
-   3. The crackmes to be solved, including its location and how to run it.
+   3. The crackme to be solved, including its location and how to run it.
    4. CLI access, e.g. in LangChain ShellTool
 
 #### Implementation:
-Initially, Docker images. This should almost certainly be upgraded to K8s, I may leave doing this as a TBD.
-We need an agent. Langchain appears to support a number, including OpenAI tools agent and a now-deprecated OpenAI function agent both based on OpenAI, and XML Agent based on Claude. Since I have an OpenAI account, I am going with OpenAI tools agent. This will require agent memory, the default is (TBD).
+Initially, Docker images. TODO This should almost certainly be upgraded to Kubernetes
+We need an agent. Langchain appears to support a number, including OpenAI tools agent and a now-deprecated OpenAI function agent both based on OpenAI, and XML Agent based on Claude. Since I have an OpenAI account, I am going with OpenAI tools agent. TODO This will require agent memory, probably a combination aof several techniques (sliding context window, keep instructions in context, summarize elided context, provide dearch over elifded details). langchain provides much of this, pieces would need to be combined. Instructions said not to work on the agent much, so skipping.
 
 ### The Framework
 
@@ -88,7 +88,7 @@ We need an agent. Langchain appears to support a number, including OpenAI tools 
     - This might be slow, and we wanted fast startup, but clealy those can be cached.
     - with 1 agent with no settings x 2 tasks with no settings, this cache is tiny, but its size could explode geometrically. Docker/K8s images are generically large, so the amount of storage required seems challenging (currently 1.2 GB/image]
     - Obvious implementation is a key-value blob store where the key is a GUID-sized hash of the agent + version + settings and task + version + settings, with a standard time-since last use caching policy
-    - Needs to interface to Docker/K8s. They default to web storage, we might have security concerns with that, but could leave that as a TBD
+    - Needs to interface to Docker/K8s.
 - Need a secure means of provision of secrets such as API keys that we don't want on disk
     - Docker Swarm provides a mechanism called Docker secrets, which sounds pretty secure
     - K8s provides Secrets. Apparently they're not very secure by default and a series of config steps are needed to make them fully secure.
@@ -113,8 +113,8 @@ We need an agent. Langchain appears to support a number, including OpenAI tools 
     - Filesystem access - CHECK IF Docker and K8s support this, TODO might want convenience wrappers
 - Archive images
     - Compressing an image to a diff would be desirable, but leave as a TODO - CHECK IF K8s supports this, might want convenience wrappers
-        - From messages I'm getting from Docker on memory saved when I delete images, it looks like it does this automatically, so we don't need to implement it - nice!
-        - container-diff list filenames of differences between images, turning that into something that stored the actual diffs would probbaly not be too hard (images are fundamentally TAR files), so then if we had a before and after image we could d this. Definitely a TBD
+        - container-diff list filenames of differences between images, turning that into something that stored the actual diffs would probbaly not be too hard (images are fundamentally TAR files), so then if we had a before and after image we could d this. Definitely a TODO
+        - From messages I'm getting from Docker on memory saved when I delete images, it looks like Docker does this automatically: if so we don't need to implement it - nice!
 - Delete images - Docker and K8s support this, TODO might want convenience wrappers
 - A GUI for this would be nice, but is not my forte. A web UI would seem like the obvious implementation. Docker and K8s already have app/web GUIs
 We'd also need a database, and some combination of repositories for code and Docker/K8s images.
@@ -122,7 +122,8 @@ We'd also need a database, and some combination of repositories for code and Doc
 I'm not an FE developer, but I do know Javascript, and I gather node.js is widely used. There are two ways to connect it to PostgreSQL, node-postgres and sequelize. node-postgres is oldschool, while sequelize is an ORM. Apparently they can both be used in one app, so likely it's possible to port between them, and node-postgres has a shorter learning curve.
 Or if I wanted to stay in Python for easier integration with ML (not clear why this would be an advantage), apparently Django or Flask are widely used. Django is better for larger projects, but has a longer learning curve
     - For this quick demo, I'll use Flask. For a real project, Django would probably be a better choice.
-I'm tempted to build the DB and leave the web UI as TBD, and just build the business logic. Which I'd rather not do in Javascript, since mine is rusty, so I am leaning towards Python.
+I'm tempted to build the DB and leave the web UI as TODO, and just build the business logic. Which I'd rather not do in Javascript, since mine is rusty, so I am leaning towards Python.
+        - I actually did a quick proof-of-concept of the web app, but much of it is TODO
 
 #### Supporting O(1000) Parallel Runs
 - Port this from Docker to Kubernetes (it's generally better at this sort of scale than Docker Swarm, and it has Docker integration)
@@ -138,7 +139,7 @@ I'm tempted to build the DB and leave the web UI as TBD, and just build the busi
     - We'll likely also need alerting, dashboards, resource usage monitoring, etc. etc.
 
 #### Data storage
-A database would seem obvious. Data storage needs are open-ended, so one with XML or JSON support seems useful. I'm inclined to avoid Oracle given it's overhead. With 1 agent and 2 tasks it feel like massive overkill, but obviously this is intended to scale to the point where this would be needed. I'm wondering if I should leave this as a TBD, but it feels like a large omission in a framework.
+A database would seem obvious. Data storage needs are open-ended, so one with XML or JSON support seems useful. I'm inclined to avoid Oracle given it's overhead. With 1 agent and 2 tasks it feel like massive overkill, but obviously this is intended to scale to the point where this would be needed. I'm wondering if I should leave this as a TODO, but it feels like a large omission in a framework.
     - If we want to go NoSQL then BaseX, eXist seem like plausible candidates, but I'm not familiar with them
     - I'm inclined to just use a SQL database, this situation seems unchallenging enough for it to be a reasonable choice, in which case PostgreSQL (aka Postgres) seems like a good solution, since it supports XML and is free. (MS SQL Server does as well, but it isn't free, and I'm building on Mac, where is can only be run in a Docker container, which sounds like a pain.)
         - PostgreSQL doesn't have a built-in GUI, but some can be found at https://pgdash.io/blog/postgres-gui-tools.html
@@ -191,24 +192,26 @@ cd ../..
 
 Build Agent:
 
-(Template settings "<settings>foo</settings>" and agent path "agents/openai/1.0.0")
+(Template settings "<settings>foo</settings>" and agent path "openai/1.0.0")
 
 cd agents/openai/1.0.0/
-docker build -f Dockerfile.agent --build-arg settings="<settings>foo</settings>" -t "agentplatform/agents/openai/1.0.0:Dockerfile" --pull=false .
+docker build -f Dockerfile.agent --build-arg settings="<settings></settings>" -t "agentplatform/openai/1.0.0:Dockerfile" --pull=false .
 cd ../..
 
 Build Task:
 
-(Template settings <settings>bar</settings>", agent path "agents/openai/1.0.0", and task path "tasks/reverse_engineering/crackmes/1.0.0")
+(Template settings <settings>bar</settings>", agent path "openai/1.0.0", and task path "reverse_engineering/crackmes/0x00/1.0.0")
 
-cd tasks/reverse_engineering/crackmes/1.0.0
-docker build -f Dockerfile.task --build-arg agent_path="agents/openai/1.0.0" --build-arg settings="<settings>bar</settings>" -t "agentplatform/agents/openai/1.0.0/tasks/reverse_engineering/crackmes/1.0.0:Dockerfile" --pull=false .
+cd tasks/reverse_engineering/crackmes/0x00/1.0.0
+docker build -f Dockerfile.task --build-arg agent_path="openai/1.0.0" --build-arg settings="<settings></settings>" -t "agentplatform/openai/1.0.0/reverse_engineering/crackmes/0x00/1.0.0:Dockerfile" --pull=false .
 cd ../../../..
 
 or:
 
-cd tasks/unix_cli/create_bitcoin_wallet/1.0.0
-docker build -f Dockerfile.task --build-arg agent_path="agents/openai/1.0.0" --build-arg settings="<settings>bar</settings>" -t "agentplatform/agents/openai/1.0.0/tasks/unix_cli/create_bitcoin_wallet/1.0.0:Dockerfile" --pull=false .
+(Template settings <settings>bar</settings>", agent path "openai/1.0.0", and task path "unix_cli/tool_use/create_bitcoin_wallet/1.0.0")
+
+cd tasks/unix_cli/tool_use/create_bitcoin_wallet/1.0.0
+docker build -f Dockerfile.task --build-arg agent_path="openai/1.0.0" --build-arg settings="<settings>bar</settings>" -t "agentplatform/openai/1.0.0/unix_cli/tool_use/create_bitcoin_wallet/1.0.0:Dockerfile" --pull=false .
 cd ../../../..
 
 
