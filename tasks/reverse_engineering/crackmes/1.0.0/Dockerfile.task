@@ -1,0 +1,11 @@
+# Build on to of the agent
+VAR agent_path
+FROM agentplatform/${agent_path}:Dockerfile AS agentplatform_task
+
+# TODO: Add tools
+
+# TODO: Set prompt
+
+# Pass in settings
+ARG settings="<settings></settings>"
+ENV TASK_SETTINGS=${settings}

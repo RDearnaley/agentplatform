@@ -1,0 +1,10 @@
+# Build on to of the agent
+ARG agent_path
+FROM agentplatform/${agent_path}:Dockerfile AS agentplatform_task
+
+# Set instructions
+COPY instructions.txt /root/instructions.txt
+
+# Pass in settings
+ARG settings="<settings></settings>"
+ENV TASK_SETTINGS=${settings}

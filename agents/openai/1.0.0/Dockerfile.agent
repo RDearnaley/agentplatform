@@ -1,0 +1,27 @@
+FROM agentplatform/base:Dockerfile AS agentplatform_agent
+
+# Add more requirements
+COPY requirements.txt /etc/agent_requirements.txt
+RUN python3 -m pip install -r /etc/agent_requirements.txt
+
+# Install the agent
+COPY openai_agent.py /root/openai_agent.py
+CMD python3 /root/openai_agent.py
+
+# Pass in settings
+ARG settings="<settings></settings>"
+ENV AGENT_SETTINGS=${settings}
+
+# Pass in secrets
+
+# TODO: INSECURE: Secrets shouldn't be in the Dockerfile, they need to be
+# encrypted at rest.
+# Handle injecting secrets into Docker securely as environment variables, see:
+# https://docs.docker.com/engine/swarm/secrets/ which requires us using Docker
+# Swarm, or since we'd probably rather use Kubernetes, they also have a solution:
+# https://kubernetes.io/docs/concepts/configuration/secret/
+#
+# TODO: I will revoke these once we're done reviewing this
+
+ENV TAVILY_API_KEY="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"
+ENV OPENAI_API_KEY="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"

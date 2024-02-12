@@ -1,8 +1,5 @@
 bs4==0.0.2
-Flask==3.0.2
-langchain==0.1.6
 langchain-community==0.0.19
 langchain_experimental==0.0.50
 langchainhub==0.1.14
 langchain_openai==0.0.5
-psycopg2-binary==2.9.9
