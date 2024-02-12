@@ -87,5 +87,8 @@ def task(agent_path, agent_version, task_path, task_version, settings):
     os.system(
         f'docker build -f Dockerfile.task --build-arg agent_path="{agent_path}/{agent_version}" --build-arg settings="{settings}" -t "agentplatform/{agent_path}/{agent_version}/{task_path}/{task_version}:Dockerfile/" --pull=false .'
     )
+    os.system(
+        f'docker container run agentplatform/{agent_path}/{agent_version}/{task_path}/{task_version}:Dockerfile'
+    )
     _cd_up()
     os.chdir(os.getcwd() + "/web_app")

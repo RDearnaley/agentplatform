@@ -214,6 +214,11 @@ cd tasks/unix_cli/tool_use/create_bitcoin_wallet/1.0.0
 docker build -f Dockerfile.task --build-arg agent_path="openai/1.0.0" --build-arg settings="<settings>bar</settings>" -t "agentplatform/openai/1.0.0/unix_cli/tool_use/create_bitcoin_wallet/1.0.0:Dockerfile" --pull=false .
 cd ../../../..
 
+Run agent:
+
+Use Docker Desktop or:
+
+docker container run agentplatform/openai/1.0.0/reverse_engineering/crackmes/0x00/1.0.0:Dockerfile
 
 ## Notes
 
