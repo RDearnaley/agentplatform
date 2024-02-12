@@ -80,7 +80,7 @@ def build_docker_agent(agent_path, agent_version, settings):
     os.chdir(os.getcwd() + "/web_app")
 
 
-# Build the task Docker image
+# Build and run the task Docker image
 def task(agent_path, agent_version, task_path, task_version, settings):
     _cd_up()
     os.chdir(os.getcwd() + f"/tasks/{task_path}/{task_version}")
